@@ -24,7 +24,7 @@
 Переопределить валидатор токена можно просто наследовав класс
 
 ```ts
-    export default class MyAuthManager extends AuthManager {
+    export default class MyAuthManager extends LocalAuthManager {
         instanceOfIJWT(o: any): boolean {
             return typeof o === 'string' && o !== 'Vasia';
         }
@@ -38,7 +38,7 @@
 #### Инициализация
 
 ```ts
-    export const MyAuthManager = new AuthManager(
+    export const MyAuthManager = new LocalAuthManager(
         'sessionStorage', //Provider
         'limited-session-token' //Key
     );

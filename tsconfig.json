@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "sourceMap": false,
+    "jsx": "react",
+    "outDir": "./dist",
+    "target": "es6",
+    "esModuleInterop": true,
+    "module": "esnext",
+    "declaration": true,
+    "moduleResolution": "node",
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": [
+    "**/*.js"
+  ],
+  "include": [
+//    "**/*.ts",
+//    "**/*.tsx",
+    "src/**/*.tsx",
+    "src/**/*.ts"
+  ]
+}

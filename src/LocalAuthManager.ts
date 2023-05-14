@@ -1,6 +1,6 @@
 /**
  * @class LocalAuthManager
- * @alias AuthManager
+ * @alias LocalAuthManager
  * @constructor
  * @classdesc
  * Менеджер авторизации в frontend
@@ -11,17 +11,19 @@
  * - При разлогинизации удаляет данные с локальных хранилищь
  */
 
-export default class AuthManager<T = string> {
+export default class LocalAuthManager<T = string> {
   /** Ключ хранения данных */
   public tokenKey: string;
+
   /** Тип хранения данних */
   protected storage: any;
+
   /** токен */
   private _token: T | null = null;
 
   constructor(
-      storageType: 'localStorage' | 'sessionStorage' = 'sessionStorage', //выбор провайдера хранилища
-      tokenKey = 'wt'
+    storageType: 'localStorage' | 'sessionStorage' = 'sessionStorage', // выбор провайдера хранилища
+    tokenKey = 'wt',
   ) {
     this.storage = storageType === 'localStorage' ? localStorage : sessionStorage;
     this.tokenKey = tokenKey;
@@ -32,23 +34,24 @@ export default class AuthManager<T = string> {
   set token(value: T | null) {
     this._token = value;
   }
+
   get token(): T | null {
     return this._token;
   }
 
   /**
    * Установка токена в локальное хранилище
-   * @memberof AuthManager
+   * @memberof LocalAuthManager
    * @param token
    */
 
   private setStorageToken(token: T) {
-    if (this.instanceOfToken(token))
-      this.storage.setItem(this.tokenKey, token);
+    if (this.instanceOfToken(token)) { this.storage.setItem(this.tokenKey, token); }
   }
+
   /**
    * Получение токена из локального хранилища
-   * @memberof AuthManager
+   * @memberof LocalAuthManager
    * @return {token | null}
    */
   public getLocalStorageToken(): T | null {
@@ -58,7 +61,7 @@ export default class AuthManager<T = string> {
 
   /**
    * Проверка токена на соответсвие типов, является ли переменная данного типа
-   * @memberof AuthManager
+   * @memberof LocalAuthManager
    * @param object
    */
   public instanceOfToken(object: any): boolean {
@@ -67,7 +70,7 @@ export default class AuthManager<T = string> {
 
   /**
    * Авторизоватся локально в системе фронтенда
-   * @memberof AuthManager
+   * @memberof LocalAuthManager
    * @param newToken
    * @public
    * @return {boolean}
@@ -81,13 +84,13 @@ export default class AuthManager<T = string> {
         return false;
       }
       return true;
-    } else return false;
+    } return false;
   }
 
   /**
    * Разлогинится в системе
    * Удаляет ключ из менеджера и хранилищь
-   * @memberof AuthManager
+   * @memberof LocalAuthManager
    * @return {boolean} индикатор удачного удаления данных из системы
    */
   public logout(): boolean {
