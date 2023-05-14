@@ -1,0 +1,38 @@
+{
+  "name": "auth-manager-js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "jsdoc -c jsdoc.json",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/westprophet/auth-manager-js.git"
+  },
+  "author": "westprophet",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/westprophet/auth-manager-js/issues"
+  },
+  "homepage": "https://github.com/westprophet/auth-manager-js#readme",
+  "devDependencies": {
+    "eslint": "^8.39.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-import-resolver-typescript": "^3.5.5",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-webpack-plugin": "^4.0.1",
+    "@types/node": "^18.16.3",
+    "@types/react-dom": "^18.2.1",
+    "jsdoc": "^3.6.11",
+    "@typescript-eslint/eslint-plugin": "^5.59.2",
+    "@typescript-eslint/parser": "^5.59.2",
+    "better-docs": "^2.7.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.0.4"
+  }
+}
