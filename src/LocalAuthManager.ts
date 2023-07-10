@@ -32,7 +32,6 @@ export default class LocalAuthManager<T = string> {
   ) {
     this.storage = storageType === 'localStorage' ? localStorage : sessionStorage;
     this.tokenKey = tokenKey;
-    this.parse = parse;
     const localToken = this.getLocalStorageToken();
     this._token = localToken ?? null;
   }
@@ -119,7 +118,8 @@ export default class LocalAuthManager<T = string> {
   public logout(): boolean {
     try {
       this.token = null;
-      this.storage.clear();
+      this.storage.removeItem(this.tokenKey);
+      sessionStorage.clear();
       return true;
     } catch (error) {
       console.log(error);
