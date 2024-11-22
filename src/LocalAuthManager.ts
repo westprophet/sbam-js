@@ -41,10 +41,10 @@ export default class LocalAuthManager<T = string> {
   }: TArg<T>) {
     this.storage = storageType === 'localStorage' ? localStorage : sessionStorage;
     this.tokenKey = tokenKey;
-    this.onLogout = onLogout;
-    this.onLogin = onLogin;
     const localToken = this.getLocalStorageToken();
     this._token = localToken ?? null;
+    this.onLogout = onLogout;
+    this.onLogin = onLogin;
     if (tokenValidator) this.isValidToken = tokenValidator;
   }
 
