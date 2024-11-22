@@ -24,6 +24,7 @@ module.exports = {
   rules: {
     "import/no-unresolved": "error",// Строка влияет на alias
     "linebreak-style": ["error", "unix"],
+    "no-underscore-dangle":  0,
     // "no-unused-vars": "off"
   },
   ignorePatterns: [".eslintrc.js"],

@@ -10,10 +10,21 @@
  * - Получает токен
  * - При разлогинизации удаляет данные с локальных хранилищь
  */
-
+interface TArg<T> {
+  storageType: 'localStorage' | 'sessionStorage', // выбор провайдера хранилища
+  tokenKey: string,
+  onLogin?(newToken:T):void,
+  onLogout?(oldToken:T):void,
+  parse?: boolean,
+  tokenValidator?(token:T): any,
+}
 export default class LocalAuthManager<T = string> {
   /** Ключ хранения данных */
   public tokenKey: string;
+
+  private readonly onLogin: (token: T) => void;
+
+  private readonly onLogout: (token: T) => void;
 
   /** Тип хранения данних */
   protected storage: any;
@@ -25,15 +36,27 @@ export default class LocalAuthManager<T = string> {
   /** токен */
   private _token: T | null = null;
 
-  constructor(
-    storageType: 'localStorage' | 'sessionStorage' = 'sessionStorage', // выбор провайдера хранилища
-    tokenKey = 'wt',
-    parse = false,
-  ) {
+  constructor({
+    onLogin, onLogout, storageType = 'sessionStorage', tokenKey = 'wt', parse = false, tokenValidator,
+  }: TArg<T>) {
     this.storage = storageType === 'localStorage' ? localStorage : sessionStorage;
     this.tokenKey = tokenKey;
+    this.onLogout = onLogout;
+    this.onLogin = onLogin;
     const localToken = this.getLocalStorageToken();
     this._token = localToken ?? null;
+    if (tokenValidator) this.isValidToken = tokenValidator;
+  }
+
+  /**
+   * Проверка токена на соответсвие типов, является ли переменная данного типа
+   * @memberof LocalAuthManager
+   * @param object
+   */
+
+  // eslint-disable-next-line class-methods-use-this
+  public isValidToken(object: any): boolean {
+    return !!object;
   }
 
   set token(value: T | null) {
@@ -56,7 +79,7 @@ export default class LocalAuthManager<T = string> {
   }
 
   private setStorageToken(token: T) {
-    if (this.instanceOfToken(token)) {
+    if (this.isValidToken(token)) {
       const a = this.isCanStringify(token);
       this.storage.setItem(this.tokenKey, a ? JSON.stringify(token) : token);
     }
@@ -76,17 +99,7 @@ export default class LocalAuthManager<T = string> {
     } catch (e) {
       res = token;
     }
-    return this.instanceOfToken(res) ? res : null;
-  }
-
-  /**
-     * Проверка токена на соответсвие типов, является ли переменная данного типа
-     * @memberof LocalAuthManager
-     * @param object
-     */
-  // eslint-disable-next-line class-methods-use-this
-  public instanceOfToken(object: any): boolean {
-    return !!object;
+    return this.isValidToken(res) ? res : null;
   }
 
   /**
@@ -97,10 +110,11 @@ export default class LocalAuthManager<T = string> {
      * @return {boolean}
      */
   public login(newToken: T): boolean {
-    if (this.instanceOfToken(newToken)) {
+    if (this.isValidToken(newToken)) {
       try {
         this.setStorageToken(newToken);
         this.token = newToken;
+        if (this.onLogin) this.onLogin(newToken);
       } catch (err) {
         return false;
       }
@@ -117,6 +131,7 @@ export default class LocalAuthManager<T = string> {
      */
   public logout(): boolean {
     try {
+      if (this.onLogout) this.onLogout(this.token);
       this.token = null;
       this.storage.removeItem(this.tokenKey);
       sessionStorage.clear();
