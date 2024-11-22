@@ -1,62 +1,99 @@
-# Auth Manager Js
-Менеджер аутентификации для фронтенд разработки
-Основная задача менеджера это упростить работу с JWT токеном на клиенте путем вывода простых и частых действий в переиспользуемые методы.
+# LocalAuthManager
 
-То есть это готовый набор методов которые приходится писать каждый раз на клиенте. И что бы их не писать каждый раз я (автор) решил вывести их в один класс с методами.
+**LocalAuthManager** - это библиотека для управления аутентификацией в клиентской части приложения. Она предоставляет простой интерфейс для работы с локальной сессией пользователя, включая хранение токенов, их валидацию и базовые операции входа и выхода из системы.
 
-Вы можете
-- Авторизация
-- Деавторизация
-- Валидация токена
-- Выбрать провайдер хранения токена localStorage и sessionStorage
-- Переопределить тип токена `TJWT` и валидатор
+## Основные функции
 
-### Как переопределить тип токена?
+- **Хранение сессии**: LocalAuthManager хранит сессию пользователя в локальном хранилище браузера (localStorage или sessionStorage).
 
-По умолчанию это обычная `string` НО можно переопределить например в `object`
+- **Валидация токена**: Библиотека позволяет валидировать токен пользователя.
 
-```ts 
-    declare type TJWT = { exp: string };
+- **Установка и получение токена**: Вы можете легко устанавливать и получать токены с помощью этой библиотеки.
+
+- **Выход из системы**: Библиотека также обеспечивает простой выход пользователя из системы, удаляя данные из локального хранилища.
+
+- **Кастомный тип токена**: Вы можете переопределить тип токена, чтобы использовать кастомный объект вместо строки.
+
+- **Кастомная валидация токена**: Позволяет пользователю определить собственную логику валидации кастомного токена.
+
+## Примеры кода
+
+### Установка и использование
+
+```javascript
+// Установка LocalAuthManager
+import LocalAuthManager from 'local-auth-manager';
+
+// Создание экземпляра LocalAuthManager
+const authManager = new LocalAuthManager();
+
+// Вход пользователя
+const userToken = 'exampleToken123';
+if (authManager.login(userToken)) {
+  console.log('Пользователь успешно вошел в систему');
+}
+
+// Получение токена пользователя
+const token = authManager.token;
+console.log('Текущий токен пользователя:', token);
+
+// Выход пользователя из системы
+if (authManager.logout()) {
+  console.log('Пользователь успешно вышел из системы');
+}
 ```
 
+### Конфигурация с кастомным типом токена и валидацией
 
-### Как переопределить валидатор токена?
-Переопределить валидатор токена можно просто наследовав класс
+```javascript
+import LocalAuthManager from 'local-auth-manager';
 
-```ts
-    export default class MyAuthManager extends LocalAuthManager {
-        instanceOfIJWT(o: any): boolean {
-            return typeof o === 'string' && o !== 'Vasia';
-        }
-    }
+// Определение кастомного типа токена (например, IJWT)
+interface IJWT {
+  userId: number;
+  username: string;
+  // Добавьте другие поля вашего кастомного токена
+}
+
+// Создание экземпляра LocalAuthManager с кастомным типом токена
+const authManager = new LocalAuthManager<IJWT>();
+
+// Вход пользователя с кастомным токеном
+const customToken: IJWT = { userId: 1, username: 'exampleUser' };
+if (authManager.login(customToken)) {
+  console.log('Пользователь успешно вошел в систему');
+}
+
+// Кастомная валидация токена
+function customTokenValidation(token: IJWT | null): boolean {
+  // Ваша логика валидации токена
+  if (token && token.userId && token.username) {
+    return true;
+  }
+  return false;
+}
+
+// Установка кастомной функции валидации
+authManager.validateToken = customTokenValidation;
+
+// Выход пользователя из системы
+if (authManager.logout()) {
+  console.log('Пользователь успешно вышел из системы');
+}
 ```
-> Это простой пример наследования для демонстрации логики переопределения
 
+## Установка
 
+Вы можете установить библиотеку с помощью npm:
 
-## Примеры использования
-#### Инициализация
-
-```ts
-    export const MyAuthManager = new LocalAuthManager(
-        'sessionStorage', //Provider
-        'limited-session-token' //Key
-    );
+```shell
+npm install local-auth-manager
 ```
 
-#### Авторизация
-```ts
-    import MyAuthManager from './MyAuthManager'
+## Документация
 
-    //...
-    if (MyAuthManager.login(token)) console.log('Пользователь авторизован');
-    else console.log('Токен не прошел валидадцию');
-```
+Дополнительную информацию о методах и параметрах класса LocalAuthManager вы можете найти в [документации](https://github.com/westprophet/local-auth-manager/blob/main/README.md).
 
-### Деавторизация
-```ts
-    import MyAuthManager from './MyAuthManager';
-    //...
-    if (MyAuthManager.logout()) console.log('Пользователь деавторизирован');
-    else console.log('Что то пошло не так(');
-```
+## Лицензия
+
+Этот проект лицензируется по [MIT License](LICENSE).
