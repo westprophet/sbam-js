@@ -13,8 +13,8 @@
 interface TArg<T> {
   storageType: 'localStorage' | 'sessionStorage', // выбор провайдера хранилища
   tokenKey: string,
-  onSave?(newToken:T):void,
-  onRemove?(oldToken:T):void,
+  onLogin?(newToken:T):void,
+  onLogout?(oldToken:T):void,
   parse?: boolean,
   tokenValidator?(token:T): any,
 }
@@ -22,9 +22,9 @@ export default class LocalAuthManager<T = string> {
   /** Ключ хранения данных */
   public tokenKey: string;
 
-  private readonly onSave: (token: T) => void;
+  private readonly onLogin: (token: T) => void;
 
-  private readonly onRemove: (token: T) => void;
+  private readonly onLogout: (token: T) => void;
 
   /** Тип хранения данних */
   protected storage: any;
@@ -37,14 +37,14 @@ export default class LocalAuthManager<T = string> {
   private _token: T | null = null;
 
   constructor({
-    onSave, onRemove, storageType = 'sessionStorage', tokenKey = 'wt', parse = false, tokenValidator,
+    onLogin, onLogout, storageType = 'sessionStorage', tokenKey = 'wt', parse = false, tokenValidator,
   }: TArg<T>) {
     this.storage = storageType === 'localStorage' ? localStorage : sessionStorage;
     this.tokenKey = tokenKey;
-    const localToken = this.getStorageToken();
+    const localToken = this.getLocalStorageToken();
     this._token = localToken ?? null;
-    this.onRemove = onRemove;
-    this.onSave = onSave;
+    this.onLogout = onLogout;
+    this.onLogin = onLogin;
     if (tokenValidator) this.isValidToken = tokenValidator;
   }
 
@@ -90,7 +90,7 @@ export default class LocalAuthManager<T = string> {
      * @memberof LocalAuthManager
      * @return {token | null}
      */
-  public getStorageToken(): T | null {
+  public getLocalStorageToken(): T | null {
     const token: any = this.storage.getItem(this.tokenKey);
     if (!token) return null;
     let res: T;
@@ -109,12 +109,12 @@ export default class LocalAuthManager<T = string> {
      * @public
      * @return {boolean}
      */
-  public save(newToken: T): boolean {
+  public login(newToken: T): boolean {
     if (this.isValidToken(newToken)) {
       try {
         this.setStorageToken(newToken);
         this.token = newToken;
-        if (this.onSave) this.onSave(newToken);
+        if (this.onLogin) this.onLogin(newToken);
       } catch (err) {
         return false;
       }
@@ -129,12 +129,12 @@ export default class LocalAuthManager<T = string> {
      * @memberof LocalAuthManager
      * @return {boolean} индикатор удачного удаления данных из системы
      */
-  public remove(): boolean {
+  public logout(): boolean {
     try {
-      if (this.onRemove) this.onRemove(this.token);
+      if (this.onLogout) this.onLogout(this.token);
       this.token = null;
       this.storage.removeItem(this.tokenKey);
-      // sessionStorage.clear();
+      sessionStorage.clear();
       return true;
     } catch (error) {
       console.log(error);
