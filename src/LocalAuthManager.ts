@@ -134,7 +134,7 @@ export default class LocalAuthManager<T = string> {
       if (this.onRemove) this.onRemove(this.token);
       this.token = null;
       this.storage.removeItem(this.tokenKey);
-      sessionStorage.clear();
+      // sessionStorage.clear();
       return true;
     } catch (error) {
       console.log(error);
