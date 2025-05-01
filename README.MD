@@ -1,99 +1,101 @@
 # Simple browser authorization manager (SBAM)
 
-**SBAM** - это библиотека для управления аутентификацией в клиентской части приложения. Она предоставляет простой интерфейс для работы с локальной сессией пользователя, включая хранение токенов, их валидацию и базовые операции входа и выхода из системы.
+**SBAM** is a library for managing authentication in the client-side part of an application. It provides a simple interface for working with the user's local session, including token storage, validation, and basic login and logout operations.
 
-## Основные функции
+## Main Features
 
-- **Хранение сессии**: SBAM хранит сессию пользователя в локальном хранилище браузера (localStorage или sessionStorage).
+- **Session Storage**: SBAM stores the user session in the browser's local storage (localStorage or sessionStorage).
 
-- **Валидация токена**: Библиотека позволяет валидировать токен пользователя.
+- **Token Validation**: The library allows you to validate the user's token.
 
-- **Установка и получение токена**: Вы можете легко устанавливать и получать токены с помощью этой библиотеки.
+- **Setting and Getting Token**: You can easily set and get tokens using this library.
 
-- **Выход из системы**: Библиотека также обеспечивает простой выход пользователя из системы, удаляя данные из локального хранилища.
+- **Logout**: The library also provides a simple way for users to log out by removing data from local storage.
 
-- **Кастомный тип токена**: Вы можете переопределить тип токена, чтобы использовать кастомный объект вместо строки.
+- **Custom Token Type**: You can override the token type to use a custom object instead of a string.
 
-- **Кастомная валидация токена**: Позволяет пользователю определить собственную логику валидации кастомного токена.
+- **Custom Token Validation**: Allows the user to define their own logic for validating a custom token.
 
-## Примеры кода
+## Code Examples
 
-### Установка и использование
+### Installation and Usage
+
 
 ```javascript
-// Установка SBAM
-import SBAM from 'local-auth-manager';
+import SBAM from 'sbam-js';
 
-// Создание экземпляра SBAM
+// Create an instance of SBAM
 const authManager = new SBAM();
 
-// Вход пользователя
+// User login
 const userToken = 'exampleToken123';
 if (authManager.login(userToken)) {
-  console.log('Пользователь успешно вошел в систему');
+    console.log('User successfully logged in');
 }
 
-// Получение токена пользователя
+// Get the user token
 const token = authManager.token;
-console.log('Текущий токен пользователя:', token);
+console.log('Current user token:', token);
 
-// Выход пользователя из системы
+// User logout
 if (authManager.logout()) {
-  console.log('Пользователь успешно вышел из системы');
+    console.log('User successfully logged out');
 }
 ```
 
-### Конфигурация с кастомным типом токена и валидацией
+### Configuration with Custom Token Type and Validation
+
 
 ```javascript
-import SBAM from 'local-auth-manager';
+import SBAM from 'sbam-js';
 
-// Определение кастомного типа токена (например, IJWT)
+// Define custom token type (for example, IJWT)
 interface IJWT {
-  userId: number;
-  username: string;
-  // Добавьте другие поля вашего кастомного токена
+    userId: number;
+    username: string;
+    // Add other fields for your custom token
 }
 
-// Создание экземпляра SBAM с кастомным типом токена
+// Create an instance of SBAM with custom token type
 const authManager = new SBAM<IJWT>();
 
-// Вход пользователя с кастомным токеном
+// User login with custom token
 const customToken: IJWT = { userId: 1, username: 'exampleUser' };
 if (authManager.login(customToken)) {
-  console.log('Пользователь успешно вошел в систему');
+    console.log('User successfully logged in');
 }
 
-// Кастомная валидация токена
+// Custom token validation
 function customTokenValidation(token: IJWT | null): boolean {
-  // Ваша логика валидации токена
-  if (token && token.userId && token.username) {
-    return true;
-  }
-  return false;
+    // Your token validation logic
+    if (token && token.userId && token.username) {
+        return true;
+    }
+    return false;
 }
 
-// Установка кастомной функции валидации
+// Set custom validation function
 authManager.validateToken = customTokenValidation;
 
-// Выход пользователя из системы
+// User logout
 if (authManager.logout()) {
-  console.log('Пользователь успешно вышел из системы');
+    console.log('User successfully logged out');
 }
 ```
 
-## Установка
+## Installation
 
-Вы можете установить библиотеку с помощью npm:
+You can install the library using NPM:
 
 ```shell
-npm install local-auth-manager
+npm install sbam-js
+```
+or
+```shell
+yarn add sbam-js
 ```
 
-## Документация
 
-Дополнительную информацию о методах и параметрах класса SBAM вы можете найти в [документации](https://github.com/westprophet/local-auth-manager/blob/main/README.md).
+## License
 
-## Лицензия
-
-Этот проект лицензируется по [MIT License](LICENSE).
+This project is licensed by [MIT License](LICENSE).
