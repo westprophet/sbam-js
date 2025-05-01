@@ -1,10 +1,10 @@
-# LocalAuthManager
+# Simple browser authorization manager (SBAM)
 
-**LocalAuthManager** - это библиотека для управления аутентификацией в клиентской части приложения. Она предоставляет простой интерфейс для работы с локальной сессией пользователя, включая хранение токенов, их валидацию и базовые операции входа и выхода из системы.
+**SBAM** - это библиотека для управления аутентификацией в клиентской части приложения. Она предоставляет простой интерфейс для работы с локальной сессией пользователя, включая хранение токенов, их валидацию и базовые операции входа и выхода из системы.
 
 ## Основные функции
 
-- **Хранение сессии**: LocalAuthManager хранит сессию пользователя в локальном хранилище браузера (localStorage или sessionStorage).
+- **Хранение сессии**: SBAM хранит сессию пользователя в локальном хранилище браузера (localStorage или sessionStorage).
 
 - **Валидация токена**: Библиотека позволяет валидировать токен пользователя.
 
@@ -21,11 +21,11 @@
 ### Установка и использование
 
 ```javascript
-// Установка LocalAuthManager
-import LocalAuthManager from 'local-auth-manager';
+// Установка SBAM
+import SBAM from 'local-auth-manager';
 
-// Создание экземпляра LocalAuthManager
-const authManager = new LocalAuthManager();
+// Создание экземпляра SBAM
+const authManager = new SBAM();
 
 // Вход пользователя
 const userToken = 'exampleToken123';
@@ -46,7 +46,7 @@ if (authManager.logout()) {
 ### Конфигурация с кастомным типом токена и валидацией
 
 ```javascript
-import LocalAuthManager from 'local-auth-manager';
+import SBAM from 'local-auth-manager';
 
 // Определение кастомного типа токена (например, IJWT)
 interface IJWT {
@@ -55,8 +55,8 @@ interface IJWT {
   // Добавьте другие поля вашего кастомного токена
 }
 
-// Создание экземпляра LocalAuthManager с кастомным типом токена
-const authManager = new LocalAuthManager<IJWT>();
+// Создание экземпляра SBAM с кастомным типом токена
+const authManager = new SBAM<IJWT>();
 
 // Вход пользователя с кастомным токеном
 const customToken: IJWT = { userId: 1, username: 'exampleUser' };
@@ -92,7 +92,7 @@ npm install local-auth-manager
 
 ## Документация
 
-Дополнительную информацию о методах и параметрах класса LocalAuthManager вы можете найти в [документации](https://github.com/westprophet/local-auth-manager/blob/main/README.md).
+Дополнительную информацию о методах и параметрах класса SBAM вы можете найти в [документации](https://github.com/westprophet/local-auth-manager/blob/main/README.md).
 
 ## Лицензия
 

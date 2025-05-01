@@ -1,3 +1,3 @@
-import LocalAuthManager from "./LocalAuthManager";
+import SBAM from "./SBAM";
 
-export  default LocalAuthManager;
+export  default SBAM;

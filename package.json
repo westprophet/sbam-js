@@ -1,7 +1,7 @@
 {
-  "name": "local-auth-manager",
-  "version": "1.2.3",
-  "description": "",
+  "name": "sbam-js",
+  "version": "1.0.2",
+  "description": "Simple browser authorization manager",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
 
@@ -20,6 +20,9 @@
     "url": "https://github.com/westprophet/auth-manager-js/issues"
   },
   "homepage": "https://github.com/westprophet/auth-manager-js#readme",
+  "dependencies": {
+    "js-cookie": "^3.0.5"
+  },
   "devDependencies": {
     "eslint": "^8.39.0",
     "eslint-config-airbnb-base": "^15.0.0",
