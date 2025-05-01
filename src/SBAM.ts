@@ -48,7 +48,7 @@ export default class SBAM<T = string> {
      */
 
   /** token */
-  private _token: T | null = null;
+  // private _token: T | null = null;
 
   constructor({
     onLogin,
@@ -80,8 +80,7 @@ export default class SBAM<T = string> {
         this.storage = sessionStorage;
     }
     this.tokenKey = tokenKey;
-    const localToken = this.getLocalStorageToken();
-    this._token = localToken ?? null;
+    // this._token = this.getStorageToken() ?? null;
     this.onLogout = onLogout;
     this.onLogin = onLogin;
     if (tokenValidator) this.isValidToken = tokenValidator;
@@ -99,11 +98,11 @@ export default class SBAM<T = string> {
   }
 
   set token(value: T | null) {
-    this._token = value;
+    this.setStorageToken(value);
   }
 
   get token(): T | null {
-    return this._token;
+    return this.getStorageToken();
   }
 
   /**
@@ -122,12 +121,7 @@ export default class SBAM<T = string> {
     if (this.isValidToken(token)) {
       const shouldStringify = this.isCanStringify(token);
       const tokenValue = shouldStringify ? JSON.stringify(token) : token as any;
-
-      if (this.storageType === 'cookie') {
-        Cookies.set(this.tokenKey, tokenValue, this.cookieOptions);
-      } else {
-        this.storage.setItem(this.tokenKey, tokenValue);
-      }
+      this.storage.setItem(this.tokenKey, tokenValue);
     }
   }
 
@@ -136,17 +130,9 @@ export default class SBAM<T = string> {
      * @memberof SBAM
      * @return {token | null}
      */
-  public getLocalStorageToken(): T | null {
-    let token: any;
-
-    if (this.storageType === 'cookie') {
-      token = Cookies.get(this.tokenKey);
-    } else {
-      token = this.storage.getItem(this.tokenKey);
-    }
-
+  public getStorageToken(): T | null {
+    const token = this.storage.getItem(this.tokenKey);
     if (!token) return null;
-
     let res: T;
     try {
       res = JSON.parse(token);
@@ -188,11 +174,7 @@ export default class SBAM<T = string> {
       if (this.onLogout) this.onLogout(this.token);
       this.token = null;
 
-      if (this.storageType === 'cookie') {
-        Cookies.remove(this.tokenKey, this.cookieOptions);
-      } else {
-        this.storage.removeItem(this.tokenKey);
-      }
+      this.storage.removeItem(this.tokenKey);
 
       // Clear session storage in any case
       // sessionStorage.clear();
