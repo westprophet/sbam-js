@@ -1,6 +1,4 @@
 import Cookies from 'js-cookie';
-import { Simulate } from 'react-dom/test-utils';
-import error = Simulate.error;
 
 type TStorageType = 'localStorage' | 'sessionStorage' | 'cookie';
 
@@ -27,7 +25,7 @@ interface TArg<T> {
 
   // parse?: boolean,
 
-  tokenValidator?(token: T): any,
+  tokenValidator?(token: unknown): token is T,
 }
 
 export default class SBAM<T = string> {
