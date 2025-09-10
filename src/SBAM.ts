@@ -62,23 +62,15 @@ export default class SBAM<T = string> {
   }: TArg<T>) {
     this.tokenKey = tokenKey;
     this.cookieOptions = cookieOptions ?? { path: '/', sameSite: 'strict' };
+
     this._storageType = storageType; // init storage
+    this.initStorage(storageType);
+
     this._token = this.getStorageToken() ?? null;
 
     this.onLogout = onLogout;
     this.onLogin = onLogin;
     if (tokenValidator) this.isValidToken = tokenValidator;
-  }
-
-  set storageType(value: TStorageType) {
-    if (this._storageType !== value) this.migrateToStorage(value);
-    this._storageType = value;
-  }
-
-  public migrateToStorage(storage: TStorageType): void {
-    if (this.storage) this.storage.removeItem(this.tokenKey); // remove old storage token
-    this.initStorage(storage); // init new storage with new type
-    if (this.token) this.setStorageToken(this.token); // set value to new storage
   }
 
   /**
@@ -156,6 +148,21 @@ export default class SBAM<T = string> {
         this.storage = sessionStorage;
     }
     return this.storage;
+  }
+
+  public migrateToStorage(storage: TStorageType): void {
+    if (this.storage) this.storage.removeItem(this.tokenKey); // remove old storage token
+    this.initStorage(storage); // init new storage with new type
+    if (this.token) this.setStorageToken(this.token); // set value to new storage
+  }
+
+  set storageType(value: TStorageType) {
+    if (this._storageType !== value) this.migrateToStorage(value);
+    this._storageType = value;
+  }
+
+  get storageType(): TStorageType {
+    return this._storageType;
   }
 
   /**
