@@ -1,4 +1,8 @@
 import Cookies from 'js-cookie';
+import { Simulate } from 'react-dom/test-utils';
+import error = Simulate.error;
+
+type TStorageType = 'localStorage' | 'sessionStorage' | 'cookie';
 
 /**
  * @class SBAM
@@ -13,7 +17,7 @@ import Cookies from 'js-cookie';
  * - When logging out, deletes data from local storages
  */
 interface TArg<T> {
-  storageType: 'localStorage' | 'sessionStorage' | 'cookie', // storage provider selection
+  storageType: TStorageType, // storage provider selection
   tokenKey: string,
   cookieOptions?: Cookies.CookieAttributes,
 
@@ -21,7 +25,7 @@ interface TArg<T> {
 
   onLogout?(oldToken: T): void,
 
-  parse?: boolean,
+  // parse?: boolean,
 
   tokenValidator?(token: T): any,
 }
@@ -35,10 +39,10 @@ export default class SBAM<T = string> {
   private readonly onLogout: (token: T) => void;
 
   /** Storage type */
-  protected storage: any;
+  public storage: any;
 
   /** Storage type */
-  protected storageType: 'localStorage' | 'sessionStorage' | 'cookie';
+  private _storageType: TStorageType;
 
   /** Cookie options */
   protected cookieOptions?: Cookies.CookieAttributes;
@@ -48,42 +52,35 @@ export default class SBAM<T = string> {
      */
 
   /** token */
-  // private _token: T | null = null;
+  private _token: T | null = null;
 
   constructor({
     onLogin,
     onLogout,
     storageType = 'sessionStorage',
     tokenKey = 'wt',
-    parse = false,
     tokenValidator,
     cookieOptions,
   }: TArg<T>) {
-    this.storageType = storageType;
-    this.cookieOptions = cookieOptions ?? { path: '/', sameSite: 'strict' };
-
-    switch (storageType) {
-      case 'localStorage':
-        this.storage = localStorage;
-        break;
-      case 'sessionStorage':
-        this.storage = sessionStorage;
-        break;
-      case 'cookie':
-        this.storage = {
-          getItem: (key: string) => Cookies.get(key),
-          setItem: (key: string, value: string) => Cookies.set(key, value, this.cookieOptions),
-          removeItem: (key: string) => Cookies.remove(key, this.cookieOptions),
-        };
-        break;
-      default:
-        this.storage = sessionStorage;
-    }
     this.tokenKey = tokenKey;
-    // this._token = this.getStorageToken() ?? null;
+    this.cookieOptions = cookieOptions ?? { path: '/', sameSite: 'strict' };
+    this._storageType = storageType; // init storage
+    this._token = this.getStorageToken() ?? null;
+
     this.onLogout = onLogout;
     this.onLogin = onLogin;
     if (tokenValidator) this.isValidToken = tokenValidator;
+  }
+
+  set storageType(value: TStorageType) {
+    if (this._storageType !== value) this.migrateToStorage(value);
+    this._storageType = value;
+  }
+
+  public migrateToStorage(storage: TStorageType): void {
+    if (this.storage) this.storage.removeItem(this.tokenKey); // remove old storage token
+    this.initStorage(storage); // init new storage with new type
+    if (this.token) this.setStorageToken(this.token); // set value to new storage
   }
 
   /**
@@ -93,16 +90,16 @@ export default class SBAM<T = string> {
      */
 
   // eslint-disable-next-line class-methods-use-this
-  public isValidToken(object: any): boolean {
+  public isValidToken(object: unknown): object is T {
     return !!object;
   }
 
   set token(value: T | null) {
-    this.setStorageToken(value);
+    this._token = value;
   }
 
   get token(): T | null {
-    return this.getStorageToken();
+    return this._token;
   }
 
   /**
@@ -142,6 +139,27 @@ export default class SBAM<T = string> {
     return this.isValidToken(res) ? res : null;
   }
 
+  private initStorage(storageType: TStorageType) {
+    switch (storageType) {
+      case 'localStorage':
+        this.storage = localStorage;
+        break;
+      case 'sessionStorage':
+        this.storage = sessionStorage;
+        break;
+      case 'cookie':
+        this.storage = {
+          getItem: (key: string) => Cookies.get(key),
+          setItem: (key: string, value: string) => Cookies.set(key, value, this.cookieOptions),
+          removeItem: (key: string) => Cookies.remove(key, this.cookieOptions),
+        };
+        break;
+      default:
+        this.storage = sessionStorage;
+    }
+    return this.storage;
+  }
+
   /**
      * Log in locally in frontend system
      * @memberof SBAM
@@ -156,6 +174,7 @@ export default class SBAM<T = string> {
         this.token = newToken;
         if (this.onLogin) this.onLogin(newToken);
       } catch (err) {
+        console.error('Error on login:', newToken);
         return false;
       }
       return true;
@@ -173,14 +192,14 @@ export default class SBAM<T = string> {
     try {
       if (this.onLogout) this.onLogout(this.token);
       this.token = null;
-
       this.storage.removeItem(this.tokenKey);
 
       // Clear session storage in any case
       // sessionStorage.clear();
       return true;
+      // eslint-disable-next-line @typescript-eslint/no-shadow
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return false;
     }
   }
