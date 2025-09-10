@@ -27,7 +27,7 @@ interface TArg<T> {
 
   // parse?: boolean,
 
-  tokenValidator?(token: T): any,
+  tokenValidator?(token: unknown): token is T,
 }
 
 export default class SBAM<T = string> {
